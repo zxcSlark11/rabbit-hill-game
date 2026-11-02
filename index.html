@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#a9d3e8">
+  <title>Кролик с горки</title>
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    html,body{background:#a9d3e8}
+    .run-progress{position:absolute;right:7%;top:28vh;height:38vh;display:flex;align-items:center;gap:8px;font-size:12px}
+    .progress-track{position:relative;width:12px;height:100%;border-radius:99px;background:#294b5c99;border:2px solid #ffffffb0;overflow:visible}
+    .progress-track b{position:absolute;left:0;right:0;bottom:0;height:0;border-radius:99px;background:#47d8cf}
+    .progress-track i{position:absolute;left:50%;bottom:0;width:16px;height:16px;transform:translate(-50%,50%);border-radius:50%;background:#ffe17b;border:2px solid #fff}
+    #event{min-height:24px;margin-top:7px;font-size:18px;color:#fff6bd;font-weight:900}
+    .scene-window{height:clamp(125px,26vh,220px);width:100%;flex:none;pointer-events:none}
+    .launch-speed{position:absolute;z-index:1;inset:0;overflow:hidden;pointer-events:none;opacity:0}
+    .launch-speed.active{animation:launch-burst-fade var(--launch-burst-duration,4.2s) ease-out forwards}
+    .launch-speed::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 42%,#d9fff326 100%)}
+    .launch-speed i{position:absolute;left:var(--x);top:var(--y);width:2px;height:var(--length);border-radius:50%;opacity:0;background:linear-gradient(180deg,transparent,#d9fff2dd 42%,#fff9ddbb 58%,transparent);filter:drop-shadow(0 0 4px #7ff2df)}
+    .launch-speed.active i{animation:launch-streak .78s ease-out var(--delay) infinite}
+    @keyframes launch-burst-fade{0%{opacity:0}8%{opacity:.88}57%{opacity:.68}100%{opacity:0}}
+    @keyframes launch-streak{0%{opacity:0;transform:rotate(var(--angle)) translateY(-20px) scaleY(.2)}20%{opacity:.9}100%{opacity:0;transform:rotate(var(--angle)) translateY(var(--travel)) scaleY(1.7)}}
+    @media(prefers-reduced-motion:reduce){.launch-speed.active i{animation:none;opacity:.28;transform:rotate(var(--angle))}}
+  </style>
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+  </script>
+</head>
+<body>
+  <main id="game">
+    <canvas id="scene" aria-label="Игра: кролик едет с горки"></canvas>
+    <div id="launch-speed" class="launch-speed" aria-hidden="true"></div>
+    <section id="menu" class="screen">
+      <div class="wallet">🥕 <span id="wallet">0</span></div>
+      <h1>Кроличий спуск</h1>
+      <p class="subtitle">Натяни рогатку и отправься в путь!</p>
+      <div class="scene-window" aria-label="Кролик на тыквенной тележке"></div>
+      <button id="play" class="primary">Играть</button>
+      <div class="upgrades">
+        <button class="upgrade" data-upgrade="sling"><b>Рогатка</b><span id="sling-effect">Сила запуска ×1</span><strong id="sling-level">Ур. 0</strong><div class="upgrade-progress" id="sling-progress" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><small class="upgrade-stage" id="sling-stage"></small><small id="sling-cost"></small></button>
+        <button class="upgrade" data-upgrade="sled"><b>Тыква</b><span id="sled-effect">Меньше трения</span><strong id="sled-level">Ур. 0</strong><div class="upgrade-progress" id="sled-progress" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><small class="upgrade-stage" id="sled-stage"></small><small id="sled-cost"></small></button>
+        <button class="upgrade" data-upgrade="income"><b>Доход</b><span id="income-effect">Монеты ×1</span><strong id="income-level">Ур. 0</strong><div class="upgrade-progress" id="income-progress" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><small class="upgrade-stage" id="income-stage"></small><small id="income-cost"></small></button>
+      </div>
+    </section>
+    <section id="charge-screen" class="screen" hidden>
+      <div class="charge-title">Зажми, чтобы натянуть!</div>
+      <div class="charge-meter"><div id="charge-fill"></div></div>
+      <div id="charge-value">0%</div>
+      <button id="charge" class="primary charge-button">Удерживай и отпусти</button>
+    </section>
+    <section id="run-hud" class="run-hud" hidden><div id="biome">Лесная тропа</div><div id="distance">0 м</div><div id="speed">0 км/ч</div><div id="event"></div><div class="run-progress"><span id="best-label">Рекорд 0 м</span><div class="progress-track"><i id="best-marker"></i><b id="run-fill"></b></div></div></section>
+    <section id="result" class="result" hidden>
+      <h2>Заезд завершён!</h2><p>Дистанция: <b id="result-distance">0 м</b></p><p>Рекорд: <b id="result-best">0 м</b></p>
+      <p>Доход: <b id="result-multiplier">×1</b></p><p class="reward">🥕 <b id="reward">0</b></p>
+      <button id="continue" class="primary">В меню</button>
+    </section>
+  </main>
+  <script type="module" src="./src/game.js"></script>
+</body>
+</html>
